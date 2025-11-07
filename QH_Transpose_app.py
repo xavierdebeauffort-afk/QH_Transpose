@@ -1,6 +1,6 @@
 """
 QH Transpose Streamlit App
-Batch CSV processor for German quarter-hourly energy meter data
+Batch CSV processor for quarter-hourly energy meter data
 """
 
 
@@ -618,6 +618,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
