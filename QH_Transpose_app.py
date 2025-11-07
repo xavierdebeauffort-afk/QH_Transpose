@@ -10,6 +10,7 @@ import os
 from datetime import datetime, timedelta
 import io
 import warnings
+import zipfile
 
 
 # ============================================
@@ -397,6 +398,7 @@ def main():
         ✅ Extracts 96 QH values
         ✅ Date range filtering
         ✅ Batch processing
+        ✅ Bulk download (ZIP)
         """)
 
 
@@ -435,6 +437,7 @@ def main():
 
 
             results = []
+            excel_files = {}  # Store Excel files for bulk download
 
 
             for idx, uploaded_file in enumerate(uploaded_files):
@@ -503,16 +506,25 @@ def main():
                             st.dataframe(output_df.head(100), use_container_width=True)
 
 
-                        # Download button
+                        # Create Excel file
                         output_buffer = io.BytesIO()
                         with pd.ExcelWriter(output_buffer, engine='openpyxl') as writer:
                             output_df.to_excel(writer, index=False, sheet_name='Data')
 
 
+                        excel_data = output_buffer.getvalue()
+                        output_filename = f"{os.path.splitext(uploaded_file.name)[0]}_cleaned.xlsx"
+
+
+                        # Store for bulk download
+                        excel_files[output_filename] = excel_data
+
+
+                        # Individual download button
                         st.download_button(
                             label="📥 Download Excel File",
-                            data=output_buffer.getvalue(),
-                            file_name=f"{os.path.splitext(uploaded_file.name)[0]}_cleaned.xlsx",
+                            data=excel_data,
+                            file_name=output_filename,
                             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                             use_container_width=True
                         )
@@ -563,7 +575,42 @@ def main():
                 st.metric("📝 Total Records", f"{total_records:,}")
 
 
+            # Download All button (if any successful files)
+            if excel_files:
+                st.markdown("---")
+                st.subheader("📦 Bulk Download")
+
+
+                # Create ZIP file with all Excel files
+                zip_buffer = io.BytesIO()
+                with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+                    for filename, excel_data in excel_files.items():
+                        zip_file.writestr(filename, excel_data)
+
+
+                zip_buffer.seek(0)
+
+
+                # Timestamp for unique filename
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+
+                col1, col2 = st.columns([2, 1])
+                with col1:
+                    st.write(f"**{len(excel_files)} file(s)** ready for download ({sum(len(d) for d in excel_files.values()) / 1024 / 1024:.2f} MB total)")
+                with col2:
+                    st.download_button(
+                        label="📦 Download All Files (ZIP)",
+                        data=zip_buffer.getvalue(),
+                        file_name=f"QH_Transpose_Results_{timestamp}.zip",
+                        mime="application/zip",
+                        type="primary",
+                        use_container_width=True
+                    )
+
+
             # Results table
+            st.markdown("---")
             st.subheader("📋 Detailed Results")
             results_df = pd.DataFrame(results)
             st.dataframe(results_df, use_container_width=True)
