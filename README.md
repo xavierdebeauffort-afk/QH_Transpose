@@ -1,6 +1,6 @@
 # QH Transpose Streamlit App
 
-A beautiful, user-friendly web interface for processing German quarter-hourly energy meter data.
+User-friendly web interface for processing quarter-hourly energy meter data.
 
 ## Features
 
