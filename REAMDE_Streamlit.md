@@ -1,6 +1,6 @@
 # QH Transpose Streamlit App
 
-A beautiful, user-friendly web interface for processing German quarter-hourly energy meter data.
+User-friendly web interface for processing quarter-hourly energy meter data.
 
 ## Features
 
@@ -97,3 +97,4 @@ COPY app.py .
 EXPOSE 8501
 CMD ["streamlit", "run", "app.py", "--server.port=8501"]
 ```
+
