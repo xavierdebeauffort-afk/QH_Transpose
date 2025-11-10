@@ -46,12 +46,41 @@ st.markdown("""
         font-size: 1.5rem;
     }
     
-    /* File uploader */
+    /* File uploader - Dark theme */
     [data-testid="stFileUploader"] {
-        border: 2px dashed #1f77b4;
+        border: 2px dashed #4a90e2;
         border-radius: 0.5rem;
         padding: 2rem;
-        background: #f8f9fa;
+        background: #1e1e1e;
+    }
+    
+    [data-testid="stFileUploader"] section {
+        background: #2d2d2d;
+        border-radius: 0.5rem;
+        padding: 2rem;
+    }
+    
+    [data-testid="stFileUploader"] section > div {
+        color: #ffffff;
+    }
+    
+    /* Upload text styling */
+    [data-testid="stFileUploader"] label {
+        color: #ffffff !important;
+    }
+    
+    /* Browse files button */
+    [data-testid="stFileUploader"] button {
+        background: #2d2d2d;
+        color: #ffffff;
+        border: 1px solid #4a90e2;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    [data-testid="stFileUploader"] button:hover {
+        background: #3d3d3d;
+        border-color: #5fa3f5;
     }
     
     /* Buttons */
@@ -585,3 +614,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
