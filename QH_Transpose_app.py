@@ -106,6 +106,15 @@ st.markdown("""
         color: #888;
         margin-bottom: 2rem;
     }
+    
+    /* Date range card */
+    .date-range-card {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -336,36 +345,6 @@ def main():
     with st.sidebar:
         st.header("⚙️ Configuration")
         
-        # Date Range Section
-        with st.expander("📅 Date Range", expanded=True):
-            current_year = datetime.now().year
-            
-            date_option = st.radio(
-                "Select date range:",
-                ["📊 Analyze all available data", 
-                 "📅 Most recent full year only", 
-                 "🎯 Specific year"],
-                index=2  # Default to specific year
-            )
-            
-            if date_option == "🎯 Specific year":
-                years = [str(year) for year in range(2020, current_year + 2)]
-                year_selection = st.selectbox(
-                    "Select Year", 
-                    years, 
-                    index=years.index(str(current_year)) if str(current_year) in years else 0
-                )
-                start_date = datetime(int(year_selection), 1, 1)
-                end_date = datetime(int(year_selection), 12, 31)
-            elif date_option == "📅 Most recent full year only":
-                start_date = datetime(current_year - 1, 1, 1)
-                end_date = datetime(current_year - 1, 12, 31)
-            else:
-                start_date = datetime(2020, 1, 1)
-                end_date = datetime(2030, 12, 31)
-            
-            st.info(f"**Range:** {start_date.strftime('%d/%m/%Y')} to {end_date.strftime('%d/%m/%Y')}")
-        
         # How to Use Section
         with st.expander("ℹ️ How to Use", expanded=False):
             st.markdown("""
@@ -379,12 +358,15 @@ def main():
         with st.expander("📋 Features", expanded=False):
             st.markdown("""
             ✅ Auto-detects file encoding  
-            ✅ Handles mid-file headers  
-            ✅ Filters by A-/A+ labels  
-            ✅ Extracts 96 QH values  
+            ✅ Handles mid-file headers automatically  
+            ✅ Filters by A+/A- labels  
+            ✅ Extracts 96 quarter-hourly values  
             ✅ Date range filtering  
-            ✅ Batch processing  
-            ✅ Bulk download (ZIP)
+            ✅ Validates data structure  
+            ✅ Converts to standard Excel format  
+            ✅ Batch processing support  
+            ✅ Bulk download (ZIP)  
+            ✅ Detailed processing summaries
             """)
 
     # ============================================
@@ -422,14 +404,58 @@ def main():
 
     st.markdown("---")
 
-    # Upload Section
-    st.markdown("### 📁 Upload Files")
+    # ============================================
+    # DATE RANGE SELECTION - MAIN WINDOW
+    # ============================================
     
-    col1, col2 = st.columns([3, 1])
+    st.markdown("### 📅 Date Range Selection")
+    
+    current_year = datetime.now().year
+    
+    # Create columns for date selection
+    col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.markdown("**Choose CSV files to process**")
-        st.caption("Limit 200MB per file • CSV")
+        date_option = st.radio(
+            "Select date range:",
+            ["📊 Analyze all available data", 
+             "📅 Most recent full year only", 
+             "🎯 Specific year"],
+            index=2,  # Default to specific year
+            horizontal=True
+        )
+    
+    with col2:
+        if date_option == "🎯 Specific year":
+            years = [str(year) for year in range(2020, current_year + 2)]
+            year_selection = st.selectbox(
+                "Select Year", 
+                years, 
+                index=years.index(str(current_year)) if str(current_year) in years else 0,
+                label_visibility="collapsed"
+            )
+            start_date = datetime(int(year_selection), 1, 1)
+            end_date = datetime(int(year_selection), 12, 31)
+        elif date_option == "📅 Most recent full year only":
+            start_date = datetime(current_year - 1, 1, 1)
+            end_date = datetime(current_year - 1, 12, 31)
+        else:
+            start_date = datetime(2020, 1, 1)
+            end_date = datetime(2030, 12, 31)
+    
+    # Display selected range
+    st.info(f"**Selected Range:** {start_date.strftime('%d/%m/%Y')} to {end_date.strftime('%d/%m/%Y')}")
+
+    st.markdown("---")
+
+    # ============================================
+    # UPLOAD SECTION
+    # ============================================
+    
+    st.markdown("### 📁 Upload Files")
+    
+    st.markdown("**Choose CSV files to process**")
+    st.caption("Limit 200MB per file • CSV")
     
     uploaded_files = st.file_uploader(
         "Choose CSV files to process",
@@ -439,13 +465,13 @@ def main():
     )
     
     if uploaded_files:
-        with col2:
-            st.markdown(f"""
-                <div style='background: #d4edda; padding: 1rem; border-radius: 0.5rem; 
-                            text-align: center; margin-top: 1.5rem;'>
-                    <strong style='color: #155724;'>✅ {len(uploaded_files)} file(s)</strong>
-                </div>
-            """, unsafe_allow_html=True)
+        # File count indicator
+        st.markdown(f"""
+            <div style='background: #d4edda; padding: 0.75rem; border-radius: 0.5rem; 
+                        text-align: center; margin: 1rem 0; border-left: 4px solid #28a745;'>
+                <strong style='color: #155724;'>✅ {len(uploaded_files)} file(s) uploaded</strong>
+            </div>
+        """, unsafe_allow_html=True)
         
         # Display file info
         with st.expander("📋 Uploaded Files", expanded=False):
@@ -614,4 +640,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
