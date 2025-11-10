@@ -106,15 +106,6 @@ st.markdown("""
         color: #888;
         margin-bottom: 2rem;
     }
-    
-    /* Date range card */
-    .date-range-card {
-        background: #f8f9fa;
-        border: 1px solid #dee2e6;
-        border-radius: 0.5rem;
-        padding: 1.5rem;
-        margin: 1.5rem 0;
-    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -370,12 +361,12 @@ def main():
             """)
 
     # ============================================
-    # MAIN CONTENT AREA
+    # MAIN CONTENT AREA - TWO COLUMN LAYOUT
     # ============================================
     
-    # Information Section
     col1, col2 = st.columns(2)
 
+    # LEFT COLUMN: Expected Data Format
     with col1:
         st.markdown("### ℹ️ Expected Data Format")
         st.markdown("""
@@ -390,49 +381,27 @@ def main():
         - Headers automatically handled
         """)
 
+    # RIGHT COLUMN: Date Range Selection
     with col2:
-        st.markdown("### 📋 Processing Features")
-        st.markdown("""
-        **This tool automatically:**
-        - ✅ Validates data structure
-        - ✅ Filters by date range
-        - ✅ Extracts A+/A- records
-        - ✅ Converts to standard format
-        - ✅ Generates Excel output
-        - ✅ Provides detailed summaries
-        """)
-
-    st.markdown("---")
-
-    # ============================================
-    # DATE RANGE SELECTION - MAIN WINDOW
-    # ============================================
-    
-    st.markdown("### 📅 Date Range Selection")
-    
-    current_year = datetime.now().year
-    
-    # Create columns for date selection
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
+        st.markdown("### 📅 Date Range Selection")
+        
+        current_year = datetime.now().year
+        
         date_option = st.radio(
             "Select date range:",
             ["📊 Analyze all available data", 
              "📅 Most recent full year only", 
              "🎯 Specific year"],
             index=2,  # Default to specific year
-            horizontal=True
+            label_visibility="collapsed"
         )
-    
-    with col2:
+        
         if date_option == "🎯 Specific year":
             years = [str(year) for year in range(2020, current_year + 2)]
             year_selection = st.selectbox(
                 "Select Year", 
                 years, 
-                index=years.index(str(current_year)) if str(current_year) in years else 0,
-                label_visibility="collapsed"
+                index=years.index(str(current_year)) if str(current_year) in years else 0
             )
             start_date = datetime(int(year_selection), 1, 1)
             end_date = datetime(int(year_selection), 12, 31)
@@ -442,9 +411,9 @@ def main():
         else:
             start_date = datetime(2020, 1, 1)
             end_date = datetime(2030, 12, 31)
-    
-    # Display selected range
-    st.info(f"**Selected Range:** {start_date.strftime('%d/%m/%Y')} to {end_date.strftime('%d/%m/%Y')}")
+        
+        # Display selected range
+        st.info(f"**Selected Range:**  \n{start_date.strftime('%d/%m/%Y')} to {end_date.strftime('%d/%m/%Y')}")
 
     st.markdown("---")
 
