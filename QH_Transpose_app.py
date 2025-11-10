@@ -325,7 +325,7 @@ def process_csv_file(file_content, file_name, start_date, end_date, progress_cal
 def main():
     # Header
     st.markdown('<p class="main-header">⚡ QH Transpose</p>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-header">Batch CSV Processor for German Quarter-Hourly Energy Meter Data</p>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-header">Batch CSV Processor for Quarter-Hourly Energy Meter Data</p>', unsafe_allow_html=True)
 
 
     # Sidebar
@@ -618,6 +618,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
